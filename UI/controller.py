@@ -24,7 +24,21 @@ class Controller:
         self._view.update_page()
 
     def handle_sequenza(self, e):
-        pass
+        if self._mese == 0:
+            self._view.create_alert("Selezionare un mese")
+            return
+        sequenza_ottima, costo = self._model.calcola_sequenza(self._mese)
+        if sequenza_ottima is None:
+            self._view.lst_result.controls.append(
+                ft.Text("Dati insufficienti nel database per completare l'analisi dei 15 giorni.", color="red")
+            )
+            self._view.update_page()
+            return
+        self._view.lst_result.controls.clear()
+        self._view.lst_result.controls.append(ft.Text(f"La sequenza ottima ha costo {costo} ed è:"))
+        for i, stop in enumerate(sequenza_ottima):
+            self._view.lst_result.controls.append(ft.Text(f"Giorno {i + 1}: {stop}"))
+        self._view.update_page()
 
     def read_mese(self, e):
         self._mese = int(e.control.value)
